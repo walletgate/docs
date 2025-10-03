@@ -530,4 +530,4 @@ const client = new WalletGate({
 
 - 📧 Email: [support@walletgate.app](mailto:support@walletgate.app)
 - 📖 [FAQ](https://walletgate.app#faq)
-- 💬 [Book a demo](mailto:henry@walletgate.app)
+- 💬 [Book a demo](mailto:hello@walletgate.app)

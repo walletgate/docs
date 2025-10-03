@@ -694,4 +694,4 @@ Webhook delivery is not rate-limited, but your endpoint should:
 
 - 📧 Email: [support@walletgate.app](mailto:support@walletgate.app)
 - 📖 [FAQ](https://walletgate.app#faq)
-- 💬 [Book a demo](mailto:henry@walletgate.app)
+- 💬 [Book a demo](mailto:hello@walletgate.app)

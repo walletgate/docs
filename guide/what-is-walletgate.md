@@ -149,4 +149,4 @@ await client.createSession({
 
 - 📧 Email: [support@walletgate.app](mailto:support@walletgate.app)
 - 📖 Check our [FAQ](https://walletgate.app#faq)
-- 💬 [Book a demo](mailto:henry@walletgate.app)
+- 💬 [Book a demo](mailto:hello@walletgate.app)
