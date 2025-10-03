@@ -1,0 +1,14 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Wallet outline -->
+  <rect x="4" y="8" width="24" height="18" rx="2" stroke="#6366f1" stroke-width="2.5" fill="none"/>
+
+  <!-- Card slot -->
+  <rect x="8" y="12" width="16" height="10" rx="1.5" fill="#6366f1" opacity="0.2"/>
+  <rect x="8" y="12" width="16" height="10" rx="1.5" stroke="#6366f1" stroke-width="1.5" fill="none"/>
+
+  <!-- EU stars (simplified circle) -->
+  <circle cx="16" cy="17" r="2.5" fill="#6366f1"/>
+
+  <!-- Gate/Shield element -->
+  <path d="M16 14 L19 17 L16 20 L13 17 Z" fill="white" stroke="#6366f1" stroke-width="1"/>
+</svg>

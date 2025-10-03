@@ -1,0 +1,449 @@
+openapi: 3.0.3
+info:
+  title: WalletGate API
+  description: |
+    **Developer-first API for EU Digital Identity verification**
+
+    Verify age, residency, and identity using EU Digital Identity Wallets with one simple integration.
+
+    ## Getting Started
+
+    1. **Sign up** at [walletgate.app](https://walletgate.app) to get your API key
+    2. **Test for free** with 100 verifications/month using `wg_test_*` keys
+    3. **Go live** on a paid plan with `wg_live_*` keys for production verification
+
+    ## Authentication
+
+    All API requests require an API key in the `x-api-key` header:
+
+    ```bash
+    curl -X POST https://api.walletgate.app/v1/verify/sessions \
+      -H "x-api-key: wg_test_YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"checks":[{"type":"age_over","value":18}]}'
+    ```
+
+    ## SDK Libraries
+
+    - **JavaScript/TypeScript**: `npm install @walletgate/sdk`
+    - **Other languages**: Use this REST API directly
+
+    ## Rate Limits
+
+    - **Test keys**: 100 verifications/month per merchant
+    - **Live keys**: Based on your plan (1,000 to 50,000+/month)
+
+    ## Support
+
+    - **Documentation**: [walletgate.app/docs](https://walletgate.app/docs)
+    - **Email**: support@walletgate.app
+    - **Security**: security@walletgate.app
+
+  version: 1.0.0
+  contact:
+    name: WalletGate Support
+    url: https://walletgate.app
+    email: support@walletgate.app
+  license:
+    name: Terms of Service
+    url: https://walletgate.app/terms
+
+servers:
+  - url: https://api.walletgate.app
+    description: Production
+  - url: http://localhost:4000
+    description: Development
+
+tags:
+  - name: Health
+    description: System health check
+  - name: Verification
+    description: |
+      Create and manage identity verification sessions.
+
+      **Verification Flow:**
+      1. Create a session with required checks
+      2. Redirect user to `verificationUrl`
+      3. User completes verification in their EU Digital Identity Wallet
+      4. User is redirected back to your `returnUrl`
+      5. Poll the session status or receive a webhook event
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      description: Check if the API is running and database is accessible
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-10-03T20:30:00Z"
+              example:
+                status: ok
+                timestamp: "2025-10-03T20:30:00Z"
+
+  /v1/verify/sessions:
+    post:
+      tags: [Verification]
+      summary: Create verification session
+      description: |
+        Create a new identity verification session with one or more checks.
+
+        **Common Use Cases:**
+        - Age verification (18+, 21+, etc.)
+        - EU residency verification
+        - Identity matching for KYC
+
+        **Response includes:**
+        - Session ID for polling status
+        - Verification URL to redirect user to their wallet
+        - Expiration time (default: 15 minutes)
+      operationId: createSession
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionRequest'
+            examples:
+              ageVerification:
+                summary: Age verification (18+)
+                value:
+                  checks:
+                    - type: age_over
+                      value: 18
+                  returnUrl: https://yourapp.com/verify-complete
+              combinedChecks:
+                summary: Age + EU residency
+                value:
+                  checks:
+                    - type: age_over
+                      value: 21
+                    - type: residency_in
+                      value: ["EU"]
+                  returnUrl: https://yourapp.com/verify-complete
+                  metadata:
+                    userId: "user_123"
+                    orderId: "order_456"
+      responses:
+        '201':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+              example:
+                success: true
+                data:
+                  id: sess_1234567890abcdef
+                  status: pending
+                  verificationUrl: https://wallet.example.eu/verify?session=sess_1234567890abcdef
+                  checks:
+                    - type: age_over
+                      value: 18
+                  expiresAt: "2025-10-03T20:45:00Z"
+                  createdAt: "2025-10-03T20:30:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/UsageLimitExceeded'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /v1/verify/sessions/{sessionId}:
+    get:
+      tags: [Verification]
+      summary: Get session status
+      description: |
+        Retrieve verification session details and check results.
+
+        **Session Status:**
+        - `pending`: Session created, waiting for user
+        - `in_progress`: User started verification
+        - `completed`: Verification successful
+        - `failed`: Verification failed (user declined or checks failed)
+        - `expired`: Session expired (default: 15 minutes)
+
+        **Polling Recommended:**
+        - Poll every 2-3 seconds after redirecting user
+        - Stop polling when status is not `pending` or `in_progress`
+        - Or use webhooks for real-time updates
+      operationId: getSession
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: Session ID returned from session creation
+          schema:
+            type: string
+            example: sess_1234567890abcdef
+      responses:
+        '200':
+          description: Session details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+              examples:
+                pending:
+                  summary: Pending session
+                  value:
+                    success: true
+                    data:
+                      id: sess_1234567890abcdef
+                      status: pending
+                      verificationUrl: https://wallet.example.eu/verify?session=sess_1234567890abcdef
+                      checks:
+                        - type: age_over
+                          value: 18
+                      createdAt: "2025-10-03T20:30:00Z"
+                      expiresAt: "2025-10-03T20:45:00Z"
+                completed:
+                  summary: Completed verification
+                  value:
+                    success: true
+                    data:
+                      id: sess_1234567890abcdef
+                      status: completed
+                      checks:
+                        - type: age_over
+                          value: 18
+                      results:
+                        age_over_18: true
+                      completedAt: "2025-10-03T20:32:00Z"
+                      createdAt: "2025-10-03T20:30:00Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: |
+        API key for verification endpoints.
+
+        **Format:**
+        - Test: `wg_test_***` (mock verification)
+        - Live: `wg_live_***` (real EU LOTL verification)
+
+        Get your API key at [walletgate.app](https://walletgate.app)
+
+  schemas:
+    CreateSessionRequest:
+      type: object
+      required:
+        - checks
+      properties:
+        checks:
+          type: array
+          minItems: 1
+          description: Array of verification checks to perform
+          items:
+            type: object
+            required:
+              - type
+              - value
+            properties:
+              type:
+                type: string
+                enum: [age_over, age_under, residency_in, attribute_match]
+                description: |
+                  Type of verification check:
+                  - `age_over`: Verify user is at least X years old
+                  - `age_under`: Verify user is at most X years old
+                  - `residency_in`: Verify user resides in specified countries
+                  - `attribute_match`: Match specific attribute (KYC)
+              value:
+                oneOf:
+                  - type: number
+                    description: Age value (for age_over, age_under)
+                  - type: array
+                    items:
+                      type: string
+                    description: Country codes (for residency_in)
+                  - type: string
+                    description: Attribute value (for attribute_match)
+                example: 18
+        returnUrl:
+          type: string
+          format: uri
+          description: URL to redirect user after verification completes
+          example: https://yourapp.com/verify-complete
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Custom metadata to attach to session (max 10 keys)
+          example:
+            userId: "user_123"
+            orderId: "order_456"
+
+    SessionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Unique session identifier
+              example: sess_1234567890abcdef
+            status:
+              type: string
+              enum: [pending, in_progress, completed, failed, expired]
+              description: Current session status
+            verificationUrl:
+              type: string
+              format: uri
+              description: URL to redirect user to their EU Digital Identity Wallet
+              example: https://wallet.example.eu/verify?session=sess_1234567890abcdef
+            checks:
+              type: array
+              description: Requested verification checks
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  value:
+                    oneOf:
+                      - type: number
+                      - type: string
+                      - type: array
+            results:
+              type: object
+              additionalProperties:
+                type: boolean
+              description: Verification check results (only present when status is completed)
+              example:
+                age_over_18: true
+                eu_resident: true
+            metadata:
+              type: object
+              description: Custom metadata attached to session
+            createdAt:
+              type: string
+              format: date-time
+            completedAt:
+              type: string
+              format: date-time
+              description: When verification was completed (only for completed status)
+            expiresAt:
+              type: string
+              format: date-time
+              description: Session expiration time
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Error code
+            message:
+              type: string
+              description: Human-readable error message
+            details:
+              type: object
+              description: Additional error details (optional)
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: INVALID_REQUEST
+              message: "Invalid check type. Must be one of: age_over, age_under, residency_in, attribute_match"
+
+    Unauthorized:
+      description: Invalid or missing API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: "Invalid API key. Get your key at https://walletgate.app"
+
+    UsageLimitExceeded:
+      description: Monthly or daily usage limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: USAGE_LIMIT_EXCEEDED
+              message: "Monthly verification limit exceeded. Upgrade your plan at https://walletgate.app/billing"
+              details:
+                currentUsage: 1000
+                monthlyLimit: 1000
+                upgradeUrl: "https://walletgate.app/billing"
+
+    RateLimitExceeded:
+      description: Too many requests
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds to wait before retrying
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RATE_LIMIT_EXCEEDED
+              message: "Too many requests. Please retry after 60 seconds."
+              details:
+                retryAfter: 60
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: NOT_FOUND
+              message: "Session not found"

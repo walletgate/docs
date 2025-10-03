@@ -1,0 +1,253 @@
+/**
+ * Custom theme styles for WalletGate docs
+ */
+
+:root {
+  --vp-c-brand-1: #6366f1;
+  --vp-c-brand-2: #818cf8;
+  --vp-c-brand-3: #a5b4fc;
+  --vp-c-brand-soft: rgba(99, 102, 241, 0.14);
+}
+
+.dark {
+  --vp-c-brand-1: #818cf8;
+  --vp-c-brand-2: #6366f1;
+  --vp-c-brand-3: #4f46e5;
+  --vp-c-brand-soft: rgba(129, 140, 248, 0.16);
+}
+
+/* Custom code block styling */
+.vp-code-group {
+  margin: 16px 0;
+}
+
+/* API endpoint badges */
+.api-method {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.api-method.post {
+  background-color: #10b981;
+  color: white;
+}
+
+.api-method.get {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.api-method.delete {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Custom info boxes */
+.custom-block.tip {
+  border-color: var(--vp-c-brand-1);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  /* Better code block scrolling on mobile */
+  .vp-code-group {
+    margin: 12px -24px;
+    border-radius: 0;
+  }
+
+  div[class*='language-'] {
+    margin: 16px -24px;
+    border-radius: 0;
+  }
+
+  /* Improve table responsiveness */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better API method badges on mobile */
+  .api-method {
+    font-size: 11px;
+    padding: 2px 6px;
+    margin-right: 4px;
+  }
+
+  /* Improve heading sizes on mobile */
+  h1 {
+    font-size: 1.75rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
+  /* Better padding for content */
+  .vp-doc {
+    padding: 24px 24px 64px;
+  }
+
+  /* Improve button sizes for touch */
+  .vp-button {
+    min-height: 44px;
+    padding: 0 20px;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .vp-doc {
+    padding: 32px 32px 96px;
+  }
+}
+
+/* Ensure images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Better touch targets */
+a, button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Improve code font size on mobile */
+@media (max-width: 640px) {
+  code {
+    font-size: 0.8125rem;
+  }
+
+  pre code {
+    font-size: 0.75rem;
+  }
+}
+
+/* Copy button improvements */
+.vp-code-group .copy,
+div[class*='language-'] .copy {
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.vp-code-group:hover .copy,
+div[class*='language-']:hover .copy {
+  opacity: 1;
+}
+
+.vp-code-group .copy.copied,
+div[class*='language-'] .copy.copied {
+  opacity: 1 !important;
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: white !important;
+}
+
+/* Hide all tooltips on copy button */
+.copy::before,
+.copy::after,
+.copy .vp-code-copy-button-text {
+  display: none !important;
+}
+
+.copy.copied::before,
+.copy.copied::after {
+  display: none !important;
+}
+
+/* Better copy button on mobile */
+@media (max-width: 768px) {
+  .vp-code-group .copy,
+  div[class*='language-'] .copy {
+    opacity: 1;
+    right: 8px;
+    top: 8px;
+  }
+}
+
+/* Swagger UI mobile optimizations */
+#swagger-ui {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#swagger-ui .swagger-ui {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  /* Make Swagger UI responsive */
+  #swagger-ui .swagger-ui .info {
+    margin: 20px 0;
+  }
+
+  #swagger-ui .swagger-ui .info .title {
+    font-size: 1.75rem !important;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  #swagger-ui .swagger-ui .info .title small {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.6em;
+  }
+
+  /* Better operation blocks on mobile */
+  #swagger-ui .swagger-ui .opblock {
+    margin: 10px 0;
+  }
+
+  #swagger-ui .swagger-ui .opblock-summary {
+    padding: 12px;
+    flex-wrap: wrap;
+  }
+
+  #swagger-ui .swagger-ui .opblock .opblock-section-header {
+    padding: 12px;
+  }
+
+  /* Improve model boxes */
+  #swagger-ui .swagger-ui .model-box {
+    padding: 12px;
+  }
+
+  /* Better button sizes */
+  #swagger-ui .swagger-ui .btn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  /* Improve authorize button */
+  #swagger-ui .swagger-ui .auth-wrapper {
+    padding: 12px;
+  }
+
+  /* Better input fields */
+  #swagger-ui .swagger-ui input[type="text"],
+  #swagger-ui .swagger-ui textarea {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  /* Improve parameter tables */
+  #swagger-ui .swagger-ui .parameters-col_description {
+    width: 100%;
+  }
+
+  /* Better response display */
+  #swagger-ui .swagger-ui .responses-inner {
+    padding: 12px;
+  }
+}
