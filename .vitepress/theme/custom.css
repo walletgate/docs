@@ -55,13 +55,24 @@
 @media (max-width: 768px) {
   /* Better code block scrolling on mobile */
   .vp-code-group {
-    margin: 12px -24px;
-    border-radius: 0;
+    margin: 12px 0;
+    border-radius: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   div[class*='language-'] {
-    margin: 16px -24px;
-    border-radius: 0;
+    margin: 16px 0;
+    border-radius: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ensure code doesn't break layout */
+  .vp-code-group pre,
+  div[class*='language-'] pre {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Improve table responsiveness */
