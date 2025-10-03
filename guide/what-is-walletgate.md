@@ -140,9 +140,9 @@ await client.createSession({
 
 ## Ready to Get Started?
 
-<div style="margin-top: 2rem;">
+<div class="vp-button-container" style="margin-top: 2rem;">
   <a href="/guide/getting-started" class="vp-button">Read Getting Started Guide</a>
-  <a href="https://walletgate.app/register" class="vp-button alt" style="margin-left: 1rem;">Sign Up Free</a>
+  <a href="https://walletgate.app/register" class="vp-button alt">Sign Up Free</a>
 </div>
 
 ## Questions?

@@ -104,7 +104,7 @@ We handle the complexity of EU Digital Identity verification so you can focus on
 Want to test the API without writing code? Use our [🔬 Interactive API Explorer](/api/interactive) to make live API calls directly from your browser.
 :::
 
-<div style="margin-top: 3rem; text-align: center;">
-  <a href="/guide/getting-started" class="vp-button" style="margin-right: 1rem;">Read the Docs</a>
+<div class="vp-button-container" style="margin-top: 3rem;">
+  <a href="/guide/getting-started" class="vp-button">Read the Docs</a>
   <a href="https://walletgate.app/register" class="vp-button alt">Start Building</a>
 </div>

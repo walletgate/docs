@@ -130,6 +130,26 @@ a, button {
   gap: 0.5rem;
 }
 
+/* Responsive button container */
+.vp-button-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .vp-button-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vp-button-container .vp-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* Improve code font size on mobile */
 @media (max-width: 640px) {
   code {
