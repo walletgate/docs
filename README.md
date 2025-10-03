@@ -2,8 +2,6 @@
 
 Official documentation for WalletGate - the developer-first EU Digital Identity verification platform.
 
-🌐 **Live Site**: [docs.walletgate.app](https://docs.walletgate.app)
-
 ## About
 
 This repository contains the source code for WalletGate's public documentation, including:
@@ -95,7 +93,7 @@ This documentation is licensed under [MIT License](LICENSE).
 
 - 📧 Email: [support@walletgate.app](mailto:support@walletgate.app)
 - 🔒 Security: [security@walletgate.app](mailto:security@walletgate.app)
-- 💼 Business: [henry@walletgate.app](mailto:henry@walletgate.app)
+- 💼 Business: [hello@walletgate.app](mailto:hello@walletgate.app)
 
 ---
 
