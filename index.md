@@ -16,7 +16,7 @@ hero:
       text: API Reference
       link: /api/overview
     - theme: alt
-      text: Interactive API
+      text: 🔬 Try Interactive API
       link: /api/interactive
 
 features:
@@ -99,6 +99,10 @@ We handle the complexity of EU Digital Identity verification so you can focus on
 2. Get your test API key (100 free verifications/month)
 3. Follow our [Getting Started guide](/guide/getting-started)
 4. Integrate with our [TypeScript SDK](/sdk/installation)
+
+::: tip Try it Now
+Want to test the API without writing code? Use our [🔬 Interactive API Explorer](/api/interactive) to make live API calls directly from your browser.
+:::
 
 <div style="margin-top: 3rem; text-align: center;">
   <a href="/guide/getting-started" class="vp-button" style="margin-right: 1rem;">Read the Docs</a>
