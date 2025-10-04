@@ -35,7 +35,7 @@ wg_live_pk_9f8e7d6c5b4a.sk_1q2w3e4r5t6y7u8i9o
 
 ### Test Keys (Free Forever)
 
-1. Sign up at [walletgate.app/register](https://walletgate.app/register)
+1. Sign up at [walletgate.app](https://walletgate.app)
 2. Navigate to **Keys** section
 3. Copy your test key (starts with `wg_test_`)
 

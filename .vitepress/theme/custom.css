@@ -224,6 +224,28 @@ div[class*='language-'] .copy.copied {
   font-size: 14px;
 }
 
+/* ------------------------------------------------------------------ */
+/* Navbar mobile fixes                                                */
+/* ------------------------------------------------------------------ */
+/* Very long site titles can push the navbar beyond the viewport.      */
+/* Constrain the brand text and ellipsize on smaller screens.          */
+@media (max-width: 768px) {
+  .VPNavBar .title span {
+    max-width: 60vw;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* On very small devices, hide the title text and show only the logo. */
+@media (max-width: 360px) {
+  .VPNavBar .title span {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   /* Make Swagger UI responsive */
   #swagger-ui .swagger-ui .info {

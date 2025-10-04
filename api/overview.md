@@ -16,6 +16,12 @@ All API requests require an API key in the `Authorization` header:
 Authorization: Bearer wg_test_your_api_key_here
 ```
 
+::: tip Getting an API Key
+- New? [Create an account](https://walletgate.app) to get a test key (`wg_test_*`, free 100/month)
+- Existing user? [Log in](https://walletgate.app/login) to view your keys
+- Live keys (`wg_live_*`) are available on paid plans (Starter+)
+:::
+
 ## API Key Format
 
 ```

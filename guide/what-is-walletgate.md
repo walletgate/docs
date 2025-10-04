@@ -130,11 +130,13 @@ await client.createSession({
 
 ## Pricing
 
-- **Free Trial**: 100 test verifications/month (no credit card)
-- **Starter**: $19/month for 1,000 verifications
-- **Growth**: $79/month for 10,000 verifications
-- **Scale**: $149/month for 50,000 verifications
+- **Free Trial**: ✨ Unlimited test verifications - test for free, forever (no credit card)
+- **Starter**: €29/month - ✨ Unlimited test + 150 live verifications
+- **Growth**: €79/month - ✨ Unlimited test + 500 live verifications + AI fraud detection
+- **Scale**: €149/month - ✨ Unlimited test + 2,000 live verifications + white-label
 - **Enterprise**: Custom pricing with dedicated support
+
+All plans include unlimited test verifications. You only pay for production (live) verifications.
 
 [View full pricing →](https://walletgate.app#pricing)
 
@@ -142,7 +144,7 @@ await client.createSession({
 
 <div class="vp-button-container" style="margin-top: 2rem;">
   <a href="/guide/getting-started" class="vp-button">Read Getting Started Guide</a>
-  <a href="https://walletgate.app/register" class="vp-button alt">Sign Up Free</a>
+  <a href="https://walletgate.app" class="vp-button alt">Sign Up Free</a>
 </div>
 
 ## Questions?

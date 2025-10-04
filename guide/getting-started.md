@@ -9,12 +9,18 @@ Get up and running with WalletGate in less than 5 minutes.
 
 ## Step 1: Get Your API Key
 
-1. [Create an account](https://walletgate.app/register) if you haven't already
+1. [Create an account](https://walletgate.app) if you haven't already
 2. Navigate to the **Keys** section in your dashboard
 3. Copy your test API key (starts with `wg_test_`)
 
 ::: tip Free Test Environment
 Test keys come with 100 free verifications per month and never expire. No credit card required!
+:::
+
+::: info Getting an API Key
+- New user? [Register](https://walletgate.app) to get a test key (`wg_test_*`)
+- Returning? [Log in](https://walletgate.app/login) to view/manage keys
+- Live keys (`wg_live_*`) are available on paid plans and used for production requests
 :::
 
 ## Step 2: Install the SDK

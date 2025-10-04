@@ -14,11 +14,11 @@ info:
 
     ## Authentication
 
-    All API requests require an API key in the `x-api-key` header:
+    All API requests require an API key via the `Authorization: Bearer <key>` header:
 
     ```bash
     curl -X POST https://api.walletgate.app/v1/verify/sessions \
-      -H "x-api-key: wg_test_YOUR_API_KEY" \
+      -H "Authorization: Bearer wg_test_YOUR_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"checks":[{"type":"age_over","value":18}]}'
     ```
@@ -67,6 +67,27 @@ tags:
       3. User completes verification in their EU Digital Identity Wallet
       4. User is redirected back to your `returnUrl`
       5. Poll the session status or receive a webhook event
+  - name: Anomaly Detection
+    description: |
+      AI-powered fraud detection and security monitoring.
+
+      **5 ML Algorithms Monitor 24/7:**
+      - Velocity attacks (rapid-fire verification attempts)
+      - Geographic anomalies (unusual location patterns)
+      - Bot traffic detection (automated requests)
+      - Credential sharing (multiple users, same credentials)
+      - Suspicious behavioral patterns
+
+      Each verification gets an AI risk score (0.0-1.0) with automated recommendations.
+
+  - name: Admin Auth
+    description: Administrative authentication endpoints used by the dashboard (session-cookie based).
+
+  - name: API Keys
+    description: Manage API keys for your account. Secrets are shown only on creation/rotation.
+
+  - name: Webhooks
+    description: Configure webhooks to receive signed events from WalletGate.
 
 paths:
   /health:
@@ -235,20 +256,668 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  # ==========================
+  # Admin Auth
+  # ==========================
+  /admin/auth/register:
+    post:
+      tags: [Admin Auth]
+      summary: Register admin account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRegisterRequest'
+      responses:
+        '201':
+          description: Registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminAuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /admin/auth/login:
+    post:
+      tags: [Admin Auth]
+      summary: Login and create admin session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLoginRequest'
+      responses:
+        '200':
+          description: Logged in; session cookie set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminAuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/auth/reset-password/request:
+    post:
+      tags: [Admin Auth]
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: Always returns success to prevent email enumeration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  /admin/auth/reset-password/confirm:
+    post:
+      tags: [Admin Auth]
+      summary: Confirm password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # ==========================
+  # API Keys
+  # ==========================
+  /admin/keys:
+    get:
+      tags: [API Keys]
+      summary: List API keys
+      security:
+        - AdminSession: []
+      responses:
+        '200':
+          description: List of keys
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [API Keys]
+      summary: Create API key
+      security:
+        - AdminSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyCreateRequest'
+      responses:
+        '201':
+          description: Key created (secret shown once)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ApiKey'
+                  apiKey:
+                    type: string
+                    description: Secret shown only once
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/keys/{id}/rotate:
+    post:
+      tags: [API Keys]
+      summary: Rotate API key secret
+      security:
+        - AdminSession: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Rotated successfully (new secret shown once)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyRotateResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/keys/{id}/revoke:
+    post:
+      tags: [API Keys]
+      summary: Revoke API key
+      security:
+        - AdminSession: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ApiKey'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==========================
+  # Webhooks
+  # ==========================
+  /admin/webhooks:
+    get:
+      tags: [Webhooks]
+      summary: List webhooks
+      security:
+        - AdminSession: []
+      responses:
+        '200':
+          description: List of webhooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+          items:
+            $ref: '#/components/schemas/Webhook'
+        '403':
+          $ref: '#/components/responses/UpgradeRequired'
+    post:
+      tags: [Webhooks]
+      summary: Create webhook
+      security:
+        - AdminSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreateRequest'
+      responses:
+        '201':
+          description: Created (secret shown once)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookCreateResponse'
+        '403':
+          $ref: '#/components/responses/UpgradeRequired'
+
+  /admin/webhooks/{id}:
+    get:
+      tags: [Webhooks]
+      summary: Get webhook
+      security:
+        - AdminSession: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Webhook
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                $ref: '#/components/schemas/Webhook'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/UpgradeRequired'
+    patch:
+      tags: [Webhooks]
+      summary: Update webhook
+      security:
+        - AdminSession: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookUpdateRequest'
+      responses:
+        '200':
+          description: Updated webhook
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                $ref: '#/components/schemas/Webhook'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/UpgradeRequired'
+    delete:
+      tags: [Webhooks]
+      summary: Delete webhook
+      security:
+        - AdminSession: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/UpgradeRequired'
+
+  /admin/webhooks/{id}/rotate-secret:
+    post:
+      tags: [Webhooks]
+      summary: Rotate webhook secret
+      security:
+        - AdminSession: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Rotated (new secret shown once)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Webhook'
+                  secret:
+                    type: string
+        '403':
+          $ref: '#/components/responses/UpgradeRequired'
+
+  /admin/webhooks/{id}/deliveries:
+    get:
+      tags: [Webhooks]
+      summary: List webhook deliveries
+      security:
+        - AdminSession: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paginated deliveries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WebhookDelivery'
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      limit:
+                        type: integer
+                      offset:
+                        type: integer
+                      hasMore:
+                        type: boolean
+        '403':
+          $ref: '#/components/responses/UpgradeRequired'
+
+  /admin/webhooks/{webhookId}/deliveries/{deliveryId}/retry:
+    post:
+      tags: [Webhooks]
+      summary: Retry failed delivery
+      security:
+        - AdminSession: []
+      parameters:
+        - in: path
+          name: webhookId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: deliveryId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Scheduled for retry
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '403':
+          $ref: '#/components/responses/UpgradeRequired'
+
+  /admin/anomaly/alerts:
+    get:
+      tags: [Anomaly Detection]
+      summary: Get anomaly alerts
+      description: |
+        Retrieve AI-detected fraud and security alerts for your account.
+
+        **Alert Severities:**
+        - `low`: Minor anomalies, monitor
+        - `medium`: Suspicious activity, investigate
+        - `high`: Likely fraud, rate limit
+        - `critical`: Confirmed threat, block immediately
+      operationId: getAnomalyAlerts
+      security:
+        - AdminSession: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by alert status
+          schema:
+            type: string
+            enum: [active, investigating, resolved, false_positive]
+        - name: severity
+          in: query
+          description: Filter by alert severity
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+        - name: limit
+          in: query
+          description: Maximum number of alerts to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: List of anomaly alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AnomalyAlert'
+                  count:
+                    type: integer
+                    example: 5
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/FeatureForbidden'
+
+  /admin/anomaly/alerts/{id}:
+    patch:
+      tags: [Anomaly Detection]
+      summary: Update anomaly alert status
+      description: Mark an alert as resolved, false positive, or under investigation
+      operationId: updateAnomalyAlert
+      security:
+        - AdminSession: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Alert ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [active, investigating, resolved, false_positive]
+                notes:
+                  type: string
+                  maxLength: 500
+                  description: Optional notes about the alert resolution
+      responses:
+        '200':
+          description: Alert updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AnomalyAlert'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/FeatureForbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/anomaly/metrics:
+    get:
+      tags: [Anomaly Detection]
+      summary: Get anomaly detection metrics
+      description: |
+        Get aggregated security metrics for your dashboard.
+
+        **Metrics Include:**
+        - Total requests and failure rates
+        - Unique IPs and geographic distribution
+        - Anomaly detection statistics
+        - Risk score distributions
+      operationId: getAnomalyMetrics
+      security:
+        - AdminSession: []
+      parameters:
+        - name: timeRange
+          in: query
+          description: Time range for metrics
+          schema:
+            type: string
+            enum: [hour, day, week]
+            default: day
+      responses:
+        '200':
+          description: Anomaly detection metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AnomalyMetrics'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/FeatureForbidden'
+
+  /admin/anomaly/dashboard:
+    get:
+      tags: [Anomaly Detection]
+      summary: Get comprehensive anomaly dashboard data
+      description: Get all anomaly detection data for the admin dashboard in one call
+      operationId: getAnomalyDashboard
+      security:
+        - AdminSession: []
+      responses:
+        '200':
+          description: Complete anomaly dashboard data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      recentAlerts:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AnomalyAlert'
+                      metrics:
+                        $ref: '#/components/schemas/AnomalyMetrics'
+                      criticalAlerts:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AnomalyAlert'
+                      summary:
+                        type: object
+                        properties:
+                          activeAlerts:
+                            type: integer
+                          criticalAlerts:
+                            type: integer
+                          totalRequests:
+                            type: integer
+                          failureRate:
+                            type: number
+                          uniqueIps:
+                            type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/FeatureForbidden'
+
 components:
   securitySchemes:
     ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: x-api-key
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
       description: |
-        API key for verification endpoints.
+        Authenticate using an API key via the `Authorization: Bearer <key>` header.
 
-        **Format:**
-        - Test: `wg_test_***` (mock verification)
-        - Live: `wg_live_***` (real EU LOTL verification)
+        **Keys:**
+        - Test: `wg_test_***` (test environment; 100 free/month)
+        - Live: `wg_live_***` (production)
 
-        Get your API key at [walletgate.app](https://walletgate.app)
+        Get your key at https://walletgate.app or log in at https://walletgate.app/login
+
+    AdminSession:
+      type: apiKey
+      in: cookie
+      name: wg_admin_session
+      description: |
+        Admin session cookie set by the dashboard after login.
+
+        To use in docs: log in to the admin app locally, copy the `wg_admin_session` cookie value from your browser (DevTools → Application → Cookies), and paste it here. The cookie will be sent with requests to /admin/* endpoints.
 
   schemas:
     CreateSessionRequest:
@@ -376,6 +1045,352 @@ components:
               type: object
               description: Additional error details (optional)
 
+    AnomalyAlert:
+      type: object
+      description: AI-detected security or fraud alert
+      properties:
+        id:
+          type: string
+          description: Unique alert identifier
+          example: "alert_abc123"
+        merchantId:
+          type: string
+          description: Merchant ID this alert belongs to
+        type:
+          type: string
+          enum: [velocity_attack, geo_anomaly, bot_traffic, credential_sharing, suspicious_pattern]
+          description: Type of anomaly detected
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+          description: Alert severity level
+        status:
+          type: string
+          enum: [active, investigating, resolved, false_positive]
+          description: Current status of the alert
+        riskScore:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: AI-calculated risk score (0.0 = low risk, 1.0 = high risk)
+          example: 0.85
+        recommendation:
+          type: string
+          enum: [monitor, rate_limit, investigate, block]
+          description: AI-recommended action
+        details:
+          type: object
+          description: Additional details about the anomaly
+          properties:
+            ipAddress:
+              type: string
+              example: "192.168.1.1"
+            country:
+              type: string
+              example: "DE"
+            userAgent:
+              type: string
+            requestCount:
+              type: integer
+            timeWindow:
+              type: string
+        aiInsights:
+          type: string
+          description: AI-generated analysis of the threat
+          example: "Detected 47 verification attempts from same IP in 2 minutes. Confidence: 0.92"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        resolvedBy:
+          type: string
+          description: Email of admin who resolved the alert
+        notes:
+          type: string
+          description: Admin notes about the alert
+
+    AnomalyMetrics:
+      type: object
+      description: Aggregated anomaly detection metrics
+      properties:
+        summary:
+          type: object
+          properties:
+            totalRequests:
+              type: integer
+              description: Total verification requests in timeframe
+            failureRate:
+              type: number
+              description: Percentage of failed verifications
+            uniqueIps:
+              type: integer
+              description: Number of unique IP addresses
+            averageRiskScore:
+              type: number
+              description: Average AI risk score
+        alerts:
+          type: object
+          properties:
+            total:
+              type: integer
+            byType:
+              type: object
+              additionalProperties:
+                type: integer
+            bySeverity:
+              type: object
+              properties:
+                low:
+                  type: integer
+                medium:
+                  type: integer
+                high:
+                  type: integer
+                critical:
+                  type: integer
+        geoDistribution:
+          type: object
+          description: Request distribution by country
+          additionalProperties:
+            type: integer
+        riskScoreDistribution:
+          type: object
+          properties:
+            low:
+              type: integer
+              description: Requests with risk score 0.0-0.3
+            medium:
+              type: integer
+              description: Requests with risk score 0.3-0.7
+            high:
+              type: integer
+              description: Requests with risk score 0.7-1.0
+
+    AdminRegisterRequest:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+        companyName:
+          type: string
+
+    AdminLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    PasswordResetRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    PasswordResetConfirm:
+      type: object
+      required: [email, token, newPassword]
+      properties:
+        email:
+          type: string
+          format: email
+        token:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+
+    AdminAuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        csrfToken:
+          type: string
+        isSuperAdmin:
+          type: boolean
+        apiKey:
+          type: string
+          description: Returned on register (test key shown once)
+
+    ApiKey:
+      type: object
+      properties:
+        id:
+          type: string
+        publicId:
+          type: string
+        name:
+          type: string
+        environment:
+          type: string
+          enum: [test, live]
+        status:
+          type: string
+          enum: [active, revoked]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    ApiKeyCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        environment:
+          type: string
+          enum: [test, live]
+        expiresAt:
+          type: string
+          format: date-time
+
+    ApiKeyRotateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ApiKey'
+        apiKey:
+          type: string
+          description: New secret shown once
+
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum: [verification.started, verification.completed, verification.failed, verification.expired]
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+        enabled:
+          type: boolean
+        status:
+          type: string
+        failureCount:
+          type: integer
+        lastFailureAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastSuccessAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    WebhookCreateRequest:
+      type: object
+      required: [url, events]
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum: [verification.started, verification.completed, verification.failed, verification.expired]
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+
+    WebhookUpdateRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum: [verification.started, verification.completed, verification.failed, verification.expired]
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+        enabled:
+          type: boolean
+
+    WebhookCreateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Webhook'
+        secret:
+          type: string
+          description: Secret shown only once
+        message:
+          type: string
+
+    WebhookDelivery:
+      type: object
+      properties:
+        id:
+          type: string
+        event:
+          type: string
+        status:
+          type: string
+        attemptNumber:
+          type: integer
+        responseStatus:
+          type: integer
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        deliveredAt:
+          type: string
+          format: date-time
+          nullable: true
+        nextRetryAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
   responses:
     BadRequest:
       description: Invalid request parameters
@@ -446,4 +1461,35 @@ components:
             success: false
             error:
               code: NOT_FOUND
-              message: "Session not found"
+      message: "Session not found"
+
+    FeatureForbidden:
+      description: Feature not available for current plan
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: FEATURE_NOT_AVAILABLE
+              message: "AI-powered anomaly detection is available on Growth and Scale plans. Please upgrade your plan."
+              details:
+                requiredPlan: growth
+                currentPlan: trial
+
+    UpgradeRequired:
+      description: Upgrade required to access this endpoint
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UPGRADE_REQUIRED
+              message: "Webhooks require Growth plan or higher. Upgrade to access webhook functionality."
+              details:
+                requiredPlan: growth
+                currentPlan: starter
+                upgradeUrl: "/admin/billing"
