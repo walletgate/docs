@@ -98,3 +98,16 @@ This documentation is licensed under [MIT License](LICENSE).
 ---
 
 Built with ❤️ by the WalletGate team
+### Code style
+
+- This docs repo primarily contains Markdown and VitePress configuration. We keep formatting simple and use Prettier defaults.
+- For SDK and backend code in other repos, we follow:
+  - TypeScript strict mode
+  - ESLint with `@typescript-eslint` and `import/order` enabled as warnings (imports alphabetized, newlines between groups)
+  - Prettier for formatting
+
+If you’d like to run code quality tools locally, install Prettier and run:
+
+```
+npm run format
+```

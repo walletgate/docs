@@ -43,6 +43,9 @@ features:
   - icon: 🔔
     title: Webhooks & Events
     details: Get real-time notifications for verification events with secure HMAC-SHA256 signed webhooks.
+  - icon: 🤖
+    title: AI Anomaly Detection
+    details: Growth+ plans include AI-powered anomaly detection with ML-based risk scoring and recommendations for velocity, geo anomalies, bot traffic, and credential sharing.
 ---
 
 ## Quick Start
@@ -99,6 +102,12 @@ We handle the complexity of EU Digital Identity verification so you can focus on
 2. Get your test API key (100 free verifications/month)
 3. Follow our [Getting Started guide](/guide/getting-started)
 4. Integrate with our [TypeScript SDK](/sdk/installation)
+
+::: tip Getting an API Key
+- New? [Create an account](https://walletgate.app/register) to get a test key (`wg_test_*`)
+- Returning? [Log in](https://walletgate.app/login) to manage keys
+- Live keys (`wg_live_*`) are available on paid plans and count toward your monthly included verifications
+:::
 
 ::: tip Try it Now
 Want to test the API without writing code? Use our [🔬 Interactive API Explorer](/api/interactive) to make live API calls directly from your browser.

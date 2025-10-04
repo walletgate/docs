@@ -6,9 +6,14 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "preview": "vitepress preview"
+    "preview": "vitepress preview",
+    "format": "prettier --write \"**/*.{md,mdx,js,ts,json,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{md,mdx,js,ts,json,yaml,yml}\"",
+    "lint:openapi": "spectral lint public/openapi.yaml"
   },
   "devDependencies": {
+    "@stoplight/spectral-cli": "^6.11.1",
+    "prettier": "^3.2.4",
     "vitepress": "^1.0.0",
     "vue": "^3.4.0"
   }

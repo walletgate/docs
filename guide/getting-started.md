@@ -17,6 +17,12 @@ Get up and running with WalletGate in less than 5 minutes.
 Test keys come with 100 free verifications per month and never expire. No credit card required!
 :::
 
+::: info Getting an API Key
+- New user? [Register](https://walletgate.app/register) to get a test key (`wg_test_*`)
+- Returning? [Log in](https://walletgate.app/login) to view/manage keys
+- Live keys (`wg_live_*`) are available on paid plans and used for production requests
+:::
+
 ## Step 2: Install the SDK
 
 ::: code-group
