@@ -150,5 +150,5 @@ const pollSession = setInterval(async () => {
 ## Need Help?
 
 - 📧 Email: [support@walletgate.app](mailto:support@walletgate.app)
-- 💬 Join our [Discord community](https://discord.gg/walletgate)
+- 💬 Join our [Discord community](https://discord.gg/Sf8P2Vpv)
 - 📖 Check the [FAQ](https://walletgate.app#faq)
