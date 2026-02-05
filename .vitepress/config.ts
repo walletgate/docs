@@ -34,7 +34,7 @@ export default defineConfig({
     ['meta', { name: 'google-site-verification', content: 'cm1lSkQ6nOGu6C5EOuDqqa-UmMoH_1ZRrbD1HZcIAlg' }],
 
     // Theme
-    ['meta', { name: 'theme-color', content: '#6366f1' }],
+    ['meta', { name: 'theme-color', content: '#1e293b' }],
 
     // Open Graph
     ['meta', { property: 'og:type', content: 'website' }],

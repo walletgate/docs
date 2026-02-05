@@ -132,7 +132,7 @@ await client.createSession({
 
 - **Free**: €0/month — 100 live verifications, no credit card required
 - **Pro**: €29/month — 1,000 live verifications, webhooks, 99.9% SLA
-- **Business**: €99/month — 10,000 live verifications, advanced analytics, priority support
+- **Business**: €99/month — 10,000 live verifications, webhooks, advanced analytics, priority support
 - **Enterprise**: Custom pricing — contact sales@walletgate.app
 
 All plans include unlimited test verifications. You only pay for production (live) verifications.

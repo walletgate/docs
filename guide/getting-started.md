@@ -23,7 +23,9 @@ Test keys come with 100 free verifications per month and never expire. No credit
 - Live keys (`wg_live_*`) are available on paid plans and used for production requests
 :::
 
-## Step 2: Install the SDK
+## Step 2: Choose Your Integration Method
+
+### Option A: TypeScript/JavaScript SDK (Recommended)
 
 ::: code-group
 
@@ -40,6 +42,20 @@ pnpm add @walletgate/eudi
 ```
 
 :::
+
+### Option B: REST API (Any Language)
+
+For **Ruby, Go, Java, PHP**, and other languages, use our REST API directly. No SDK installation required — just HTTP requests.
+
+```bash
+# Works with any language that can make HTTP requests
+curl -X POST https://api.walletgate.app/v1/verify/sessions \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"checks":[{"type":"age_over","value":18}]}'
+```
+
+See [REST API examples](#rest-api-examples) below for Ruby, Go, Java, and more.
 
 ## Step 3: Create Your First Verification
 
@@ -147,8 +163,101 @@ const pollSession = setInterval(async () => {
 - 📚 Browse the [API Reference](/api/overview)
 - 🎮 Try the [Interactive API](/api/interactive)
 
+## REST API Examples
+
+For languages without an SDK, use the REST API directly:
+
+### Ruby
+
+```ruby
+require 'net/http'
+require 'json'
+
+uri = URI('https://api.walletgate.app/v1/verify/sessions')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = "Bearer #{ENV['WALLETGATE_API_KEY']}"
+request['Content-Type'] = 'application/json'
+request.body = { checks: [{ type: 'age_over', value: 18 }] }.to_json
+
+response = http.request(request)
+session = JSON.parse(response.body)['data']
+puts "Verification URL: #{session['verificationUrl']}"
+```
+
+### Go
+
+```go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+)
+
+func main() {
+    body, _ := json.Marshal(map[string]interface{}{
+        "checks": []map[string]interface{}{
+            {"type": "age_over", "value": 18},
+        },
+    })
+
+    req, _ := http.NewRequest("POST", "https://api.walletgate.app/v1/verify/sessions", bytes.NewBuffer(body))
+    req.Header.Set("Authorization", "Bearer "+os.Getenv("WALLETGATE_API_KEY"))
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, _ := http.DefaultClient.Do(req)
+    var result map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&result)
+
+    session := result["data"].(map[string]interface{})
+    fmt.Println("Verification URL:", session["verificationUrl"])
+}
+```
+
+### Java
+
+```java
+import java.net.http.*;
+import java.net.URI;
+
+HttpClient client = HttpClient.newHttpClient();
+String body = "{\"checks\":[{\"type\":\"age_over\",\"value\":18}]}";
+
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.walletgate.app/v1/verify/sessions"))
+    .header("Authorization", "Bearer " + System.getenv("WALLETGATE_API_KEY"))
+    .header("Content-Type", "application/json")
+    .POST(HttpRequest.BodyPublishers.ofString(body))
+    .build();
+
+HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.body());
+```
+
+### Python
+
+```python
+import requests
+import os
+
+response = requests.post(
+    'https://api.walletgate.app/v1/verify/sessions',
+    headers={'Authorization': f'Bearer {os.getenv("WALLETGATE_API_KEY")}'},
+    json={'checks': [{'type': 'age_over', 'value': 18}]}
+)
+
+session = response.json()['data']
+print(f"Verification URL: {session['verificationUrl']}")
+```
+
 ## Need Help?
 
 - 📧 Email: [support@walletgate.app](mailto:support@walletgate.app)
-- 💬 Join our [Discord community](https://discord.gg/Sf8P2Vpv)
+- 💬 Join our [Discord community](https://discord.gg/KZ8sP5Ua)
 - 📖 Check the [FAQ](https://walletgate.app#faq)
