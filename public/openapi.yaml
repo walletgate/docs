@@ -154,8 +154,7 @@ paths:
                   checks:
                     - type: age_over
                       value: 21
-                    - type: residency_in
-                      value: ["EU"]
+                    - type: residency_eu
                   returnUrl: https://yourapp.com/verify-complete
                   metadata:
                     userId: "user_123"
@@ -933,27 +932,21 @@ components:
             type: object
             required:
               - type
-              - value
             properties:
               type:
                 type: string
-                enum: [age_over, age_under, residency_in, attribute_match]
+                enum: [age_over, residency_eu, identity_verified]
                 description: |
                   Type of verification check:
-                  - `age_over`: Verify user is at least X years old
-                  - `age_under`: Verify user is at most X years old
-                  - `residency_in`: Verify user resides in specified countries
-                  - `attribute_match`: Match specific attribute (KYC)
+                  - `age_over`: Verify user is at least X years old (requires `value`)
+                  - `residency_eu`: Verify user resides in an EU member state
+                  - `identity_verified`: Verify user's identity has been confirmed
               value:
                 oneOf:
                   - type: number
-                    description: Age value (for age_over, age_under)
-                  - type: array
-                    items:
-                      type: string
-                    description: Country codes (for residency_in)
+                    description: Age threshold (for age_over, e.g. 18, 21)
                   - type: string
-                    description: Attribute value (for attribute_match)
+                    description: Additional check parameter
                 example: 18
         returnUrl:
           type: string
@@ -1402,7 +1395,7 @@ components:
             success: false
             error:
               code: INVALID_REQUEST
-              message: "Invalid check type. Must be one of: age_over, age_under, residency_in, attribute_match"
+              message: "Invalid check type. Must be one of: age_over, residency_eu, identity_verified"
 
     Unauthorized:
       description: Invalid or missing API key

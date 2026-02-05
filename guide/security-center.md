@@ -1,9 +1,9 @@
 ---
-title: Security Center (Growth+)
+title: Security Center (Business+)
 outline: deep
 ---
 
-# Security Center (Growth+)
+# Security Center (Business+)
 
 The Security Center provides AI‑powered anomaly detection and real‑time visibility into suspicious activity across your API usage.
 
@@ -41,7 +41,7 @@ Data is processed asynchronously and designed to fail‑open so normal traffic i
 
 ## Access & Plans
 
-- Available on: **Growth** and **Scale** plans
+- Available on: **Business** plan
 - Admin Console: “Security” tab in the top navigation (appears automatically on eligible plans)
 - API endpoints (admin):
   - `GET /admin/anomaly/alerts`
@@ -55,18 +55,18 @@ By default, anomaly tracking runs when Admin is enabled and feature flags are on
 
 - Environment: `FEATURE_AI_RISK_SCORING=true` and `FEATURE_ANOMALY_DETECTION=true`
 - Admin enabled: `ADMIN_ENABLED=true`
-- Plan entitlements set to Growth or Scale for the account
+- Plan entitlements set to Business for the account
 
 Optional:
 - GeoIP provider (e.g., MaxMind) for higher‑accuracy geolocation
-- Webhooks to receive critical alerts (Growth+)
+- Webhooks to receive critical alerts (Business+)
 
 ## Privacy & Security
 
 - No PII in logs — we store minimal request metadata
 - Signed webhooks with timestamped HMAC‑SHA256
 - TLS enforced for all endpoints
-- Plan‑gated access to prevent disclosure on Trial/Starter
+- Plan‑gated access to prevent disclosure on Free/Pro
 
 ## FAQ
 
@@ -74,8 +74,8 @@ Optional:
 No. Analysis is asynchronous and fails open. You can enable optional policies (throttle/block) for high‑risk scores.
 
 **How do I get alerts programmatically?**
-Use the admin anomaly APIs or set up webhooks on Growth+.
+Use the admin anomaly APIs or set up webhooks on Business+.
 
-**Is this included in Trial or Starter?**
-No. Security Center requires **Growth** or **Scale**.
+**Is this included in Free or Pro?**
+No. Security Center requires **Business** plan.
 

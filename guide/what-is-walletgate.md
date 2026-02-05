@@ -122,19 +122,18 @@ await client.createSession({
 | Traditional Approach | WalletGate |
 |---------------------|------------|
 | 6-12 months development | **5 minutes integration** |
-| €500K-€1M+ cost | **$19/month** (starter plan) |
-| Dedicated security team | **SOC 2 certified** |
+| €500K-€1M+ cost | **From €0/month** |
+| Dedicated security team | **Built-in security** |
 | Manual LOTL updates | **Automatic updates** |
 | Complex cryptography | **Simple API** |
 | Regulatory risk | **Full compliance** |
 
 ## Pricing
 
-- **Free Trial**: ✨ Unlimited test verifications - test for free, forever (no credit card)
-- **Starter**: €29/month - ✨ Unlimited test + 150 live verifications
-- **Growth**: €79/month - ✨ Unlimited test + 500 live verifications + AI fraud detection
-- **Scale**: €149/month - ✨ Unlimited test + 2,000 live verifications + white-label
-- **Enterprise**: Custom pricing with dedicated support
+- **Free**: €0/month — 100 live verifications, no credit card required
+- **Pro**: €29/month — 1,000 live verifications, webhooks, 99.9% SLA
+- **Business**: €99/month — 10,000 live verifications, advanced analytics, priority support
+- **Enterprise**: Custom pricing — contact sales@walletgate.app
 
 All plans include unlimited test verifications. You only pay for production (live) verifications.
 

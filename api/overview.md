@@ -19,7 +19,7 @@ Authorization: Bearer wg_test_your_api_key_here
 ::: tip Getting an API Key
 - New? [Create an account](https://walletgate.app) to get a test key (`wg_test_*`, free 100/month)
 - Existing user? [Log in](https://walletgate.app/login) to view your keys
-- Live keys (`wg_live_*`) are available on paid plans (Starter+)
+- Live keys (`wg_live_*`) are available on all plans (Free tier includes 100/month)
 :::
 
 ## API Key Format
@@ -218,23 +218,27 @@ Verify that the user's identity has been confirmed.
 
 ## Rate Limits
 
-Rate limits are based on your plan:
+All plans share the same per-key rate limit. Monthly verification quotas vary by plan:
 
-| Plan | Requests/Second | Requests/Month |
-|------|----------------|----------------|
-| **Free Trial** | No limit | 100 (test only) |
-| **Starter** | 10/s | 1,000 |
-| **Growth** | 50/s | 10,000 |
-| **Scale** | 200/s | 50,000 |
+| Plan | Per-Key Rate Limit | Live Verifications/Month |
+|------|-------------------|--------------------------|
+| **Free** | 60 req/min | 100 |
+| **Pro** | 60 req/min | 1,000 |
+| **Business** | 60 req/min | 10,000 |
 | **Enterprise** | Custom | Custom |
+
+Test verifications are **unlimited** on all plans.
 
 Rate limit headers are included in all responses:
 
 ```http
-X-RateLimit-Limit: 10
-X-RateLimit-Remaining: 9
-X-RateLimit-Reset: 1609459200
+RateLimit-Limit: 300
+RateLimit-Remaining: 299
+RateLimit-Reset: 60
+Retry-After: 45
 ```
+
+When rate limited (HTTP 429), the response includes a `Retry-After` header and `retryAfterSeconds` in the body.
 
 ## Webhooks
 
