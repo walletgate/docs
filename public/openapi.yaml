@@ -1466,9 +1466,9 @@ components:
             success: false
             error:
               code: FEATURE_NOT_AVAILABLE
-              message: "AI-powered anomaly detection is available on Growth and Scale plans. Please upgrade your plan."
+              message: "AI-powered anomaly detection is available on the Business plan. Please upgrade your plan."
               details:
-                requiredPlan: growth
+                requiredPlan: business
                 currentPlan: trial
 
     UpgradeRequired:
@@ -1481,8 +1481,8 @@ components:
             success: false
             error:
               code: UPGRADE_REQUIRED
-              message: "Webhooks require Growth plan or higher. Upgrade to access webhook functionality."
+              message: "Webhooks require the Business plan. Upgrade to access webhook functionality."
               details:
-                requiredPlan: growth
-                currentPlan: starter
+                requiredPlan: business
+                currentPlan: trial
                 upgradeUrl: "/admin/billing"
