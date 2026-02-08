@@ -75,8 +75,8 @@ Every test response includes:
 
 Use the dashboard playground to simulate wallet flows before EUDI rollouts:
 
-- Scenario library (Pro+): built-in pass/fail, expired, revoked, and network-error simulations.
-- Scenario builder (Business): create reusable custom scenarios for your own checks.
+- 20+ pre-built test scenarios (Pro+): pass/fail, expired, revoked, and network-error simulations.
+- Build your own scenarios (Business): create reusable custom scenarios for your own checks.
 - Compliance report (Business): download an HTML readiness report for audits.
 - Webhook inspector (Pro+): review deliveries, payloads, and retry failed webhooks.
 
@@ -299,7 +299,7 @@ A: Check the `environment` field in the API response: `"test"` or `"live"`.
 A: No, sessions are tied to the environment of the API key used to create them.
 
 **Q: Are there any feature differences?**
-A: The core API is the same in test and live. Sandbox tooling (scenario library, compliance reports, webhook inspector) is plan-based, not environment-based.
+A: The core API is the same in test and live. Sandbox tooling (pre-built test scenarios, compliance reports, webhook inspector) is plan-based, not environment-based.
 
 ## Next Steps
 

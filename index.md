@@ -46,7 +46,7 @@ features:
 
   - icon: 🧪
     title: Sandbox Toolkit
-    details: Scenario library, custom scenario builder, compliance report export, and webhook inspector.
+    details: 20+ pre-built test scenarios, build your own scenarios, compliance report export, and webhook inspector.
   - icon: 🤖
     title: AI Anomaly Detection
     details: Business plan includes AI-powered anomaly detection with ML-based risk scoring and recommendations for velocity, geo anomalies, bot traffic, and credential sharing.
