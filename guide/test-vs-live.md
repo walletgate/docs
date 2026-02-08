@@ -71,6 +71,15 @@ Every test response includes:
 - Compliance requirements
 - Legal verification needs
 
+### Sandbox Toolkit
+
+Use the dashboard playground to simulate wallet flows before EUDI rollouts:
+
+- Scenario library (Pro+): built-in pass/fail, expired, revoked, and network-error simulations.
+- Scenario builder (Business): create reusable custom scenarios for your own checks.
+- Compliance report (Business): download an HTML readiness report for audits.
+- Webhook inspector (Pro+): review deliveries, payloads, and retry failed webhooks.
+
 ## Live Environment 🚀
 
 ### Purpose
@@ -290,7 +299,7 @@ A: Check the `environment` field in the API response: `"test"` or `"live"`.
 A: No, sessions are tied to the environment of the API key used to create them.
 
 **Q: Are there any feature differences?**
-A: No, both environments support the same API features. Only the trust infrastructure differs.
+A: The core API is the same in test and live. Sandbox tooling (scenario library, compliance reports, webhook inspector) is plan-based, not environment-based.
 
 ## Next Steps
 

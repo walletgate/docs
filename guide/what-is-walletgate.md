@@ -35,10 +35,11 @@ That's it. We handle everything else.
 ### 🚀 Developer Experience
 
 - **5-line integration**: Start verifying in minutes
-- **Test environment**: Free sandbox with 100 verifications/month
+- **Test environment**: Free sandbox with mock trust infrastructure
 - **TypeScript SDK**: Fully typed with autocomplete
 - **Framework agnostic**: Works with React, Vue, Node.js, Next.js, etc.
 - **Comprehensive docs**: Interactive API reference, guides, examples
+- **Sandbox toolkit**: Scenario library, custom scenarios, compliance report export
 
 ### 🔒 Enterprise Security
 
@@ -130,9 +131,9 @@ await client.createSession({
 
 ## Pricing
 
-- **Free**: €0/month — 100 live verifications, no credit card required
-- **Pro**: €29/month — 1,000 live verifications, webhooks, 99.9% SLA
-- **Business**: €99/month — 10,000 live verifications, webhooks, advanced analytics, priority support
+- **Free**: €0/month — 100 live verifications, basic sandbox
+- **Pro**: €29/month — 1,000 live verifications, scenario library, webhook inspector, 99.9% SLA
+- **Business**: €99/month — 10,000 live verifications, webhooks, scenario builder, compliance reports, advanced analytics, priority support
 - **Enterprise**: Custom pricing — contact sales@walletgate.app
 
 All plans include unlimited test verifications. You only pay for production (live) verifications.

@@ -619,16 +619,13 @@ Error: Webhook URL uses private IP address
 
 ### Viewing Delivery Logs
 
-Check webhook delivery status in dashboard:
+Check webhook delivery status in the dashboard:
 
-1. Go to [walletgate.app/admin)
-2. See all webhook deliveries:
-   - Delivery ID
-   - Timestamp
-   - Event type
-   - HTTP status
-   - Response time
-   - Retry attempts
+1. Go to `/admin/webhooks`
+2. Use **Webhook Inspector** to:
+   - View delivery status, response codes, and errors
+   - Inspect payload and signature
+   - Retry failed deliveries
 
 ## Security
 

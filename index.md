@@ -34,7 +34,7 @@ features:
 
   - icon: 🎯
     title: Test Environment
-    details: Free test environment with 100 verifications per month. No credit card required to get started.
+    details: Free test environment with mock trust infrastructure. Perfect for development and demos.
 
   - icon: 📊
     title: Real-time Dashboard
@@ -43,6 +43,10 @@ features:
   - icon: 🔔
     title: Webhooks & Events
     details: Get real-time notifications for verification events with secure HMAC-SHA256 signed webhooks.
+
+  - icon: 🧪
+    title: Sandbox Toolkit
+    details: Scenario library, custom scenario builder, compliance report export, and webhook inspector.
   - icon: 🤖
     title: AI Anomaly Detection
     details: Business plan includes AI-powered anomaly detection with ML-based risk scoring and recommendations for velocity, geo anomalies, bot traffic, and credential sharing.
