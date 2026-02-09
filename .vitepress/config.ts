@@ -28,7 +28,6 @@ export default defineConfig({
     ['meta', { name: 'keywords', content: 'EUDI, EUDI wallet, EU Digital Identity, eIDAS 2.0, OpenID4VP, ISO 18013-5, digital identity API, EU wallet API, identity verification, European digital identity documentation, EUDI integration guide, mDL verification, mobile driving license' }],
     ['meta', { name: 'author', content: 'WalletGate' }],
     ['meta', { name: 'robots', content: 'index,follow' }],
-    ['link', { rel: 'canonical', href: 'https://docs.walletgate.app/' }],
 
     // Google Search Console Verification
     ['meta', { name: 'google-site-verification', content: 'cm1lSkQ6nOGu6C5EOuDqqa-UmMoH_1ZRrbD1HZcIAlg' }],
@@ -41,7 +40,6 @@ export default defineConfig({
     ['meta', { property: 'og:site_name', content: 'WalletGate Documentation' }],
     ['meta', { property: 'og:title', content: 'EUDI Wallet Verification API Documentation — WalletGate' }],
     ['meta', { property: 'og:description', content: 'Complete guide to integrating EU Digital Identity Wallet (EUDI) verification. OpenID4VP, ISO 18013-5, eIDAS 2.0 compliant. Real code examples and API reference.' }],
-    ['meta', { property: 'og:url', content: 'https://docs.walletgate.app/' }],
     ['meta', { property: 'og:image', content: 'https://docs.walletgate.app/og-docs.png' }],
     ['meta', { property: 'og:locale', content: 'en_EU' }],
 
@@ -52,6 +50,22 @@ export default defineConfig({
     ['meta', { name: 'twitter:description', content: 'Complete guide to integrating EU Digital Identity Wallet (EUDI) verification. OpenID4VP, ISO 18013-5, eIDAS 2.0 compliant.' }],
     ['meta', { name: 'twitter:image', content: 'https://docs.walletgate.app/og-docs.png' }],
   ],
+
+  transformHead({ pageData }) {
+    const relative = pageData.relativePath || 'index.md';
+    let pathname = relative
+      .replace(/(^|\/)index\.md$/, '/')
+      .replace(/\.md$/, '');
+
+    if (!pathname.startsWith('/')) pathname = `/${pathname}`;
+    if (pathname !== '/' && pathname.endsWith('/')) pathname = pathname.slice(0, -1);
+
+    const canonical = `https://docs.walletgate.app${pathname}`;
+    return [
+      ['link', { rel: 'canonical', href: canonical }],
+      ['meta', { property: 'og:url', content: canonical }],
+    ];
+  },
 
   themeConfig: {
     // Force a concise site title in the navbar; avoids wrapping/overflow
