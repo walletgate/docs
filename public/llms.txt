@@ -1,0 +1,38 @@
+# WalletGate Documentation
+
+> Developer documentation for WalletGate — the EU Digital Identity Wallet (EUDI) verification API.
+
+## Documentation Structure
+
+### Guide
+- [What is WalletGate?](https://docs.walletgate.app/guide/what-is-walletgate) — Overview of EUDI wallet verification, how it works, and why it matters
+- [Getting Started](https://docs.walletgate.app/guide/getting-started) — Quick start guide: install SDK, create API key, run first verification
+- [Test vs Live Mode](https://docs.walletgate.app/guide/test-vs-live) — Sandbox testing with test keys vs production with live keys
+- [Verification Flow](https://docs.walletgate.app/guide/verification-flow) — Step-by-step: session creation, wallet scanning, credential verification, result retrieval
+- [Authentication](https://docs.walletgate.app/guide/authentication) — API key authentication, key rotation, security best practices
+- [Webhooks](https://docs.walletgate.app/guide/webhooks) — Real-time verification event notifications (Business plan), signature verification, retry logic
+- [Security Center](https://docs.walletgate.app/guide/security-center) — Rate limiting, anomaly detection, IP allowlisting, audit logs
+- [Error Handling](https://docs.walletgate.app/guide/error-handling) — Error codes, retry strategies, troubleshooting common issues
+- [Mobile Integration](https://docs.walletgate.app/guide/mobile-integration) — Deep links, universal links, in-app browser handling for mobile EUDI wallets
+
+### API Reference
+- [API Overview](https://docs.walletgate.app/api/overview) — REST API endpoints, request/response formats, authentication
+- [Interactive API](https://docs.walletgate.app/api/interactive) — Try API calls directly in the browser
+
+### SDK
+- [SDK Installation](https://docs.walletgate.app/sdk/installation) — Install @walletgate/eudi via npm, configure for Node.js or browser
+
+## Key Concepts
+
+- **EUDI Wallet**: EU Digital Identity Wallet — a government-issued digital wallet containing verified identity credentials
+- **Verification Checks**: age_over (age verification), residency_eu (EU residency), identity_verified (full identity)
+- **OpenID4VP**: The protocol used for verifiable presentations from EUDI wallets
+- **EU LOTL**: EU List of Trusted Lists — the trust anchor for verifying wallet issuer certificates
+- **Test Mode**: Simulated verifications for development (free, unlimited)
+- **Live Mode**: Real verifications against actual EUDI wallets (metered by plan)
+
+## Related
+
+- Main site: https://www.walletgate.app
+- SDK on npm: https://www.npmjs.com/package/@walletgate/eudi
+- Live demo: https://demo.walletgate.app
