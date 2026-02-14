@@ -54,8 +54,8 @@ const handleVerifyAge = async () => {
     }),
   });
 
-  const { sessionId, qrCode } = await response.json();
-  setQRCode(qrCode);
+  const { sessionId, verificationUrl } = await response.json();
+  setQRCode(verificationUrl); // Pass verificationUrl directly into your QR renderer
 };
 ```
 
@@ -72,7 +72,7 @@ app.post('/api/verify/create', async (req, res) => {
     apiKey: process.env.WALLETGATE_API_KEY,
   });
 
-  const session = await client.createSession({
+  const session = await client.startVerification({
     checks: [
       { type: 'age_over', value: 18 },
     ],
@@ -86,7 +86,7 @@ app.post('/api/verify/create', async (req, res) => {
 
   res.json({
     sessionId: session.id,
-    qrCode: session.qrCode,
+    verificationUrl: session.verificationUrl,
     expiresAt: session.expiresAt,
   });
 });
@@ -100,13 +100,13 @@ Show the QR code in your UI for the user to scan.
 ```typescript
 import QRCode from 'react-qr-code';
 
-function VerificationModal({ qrCodeData }) {
+function VerificationModal({ verificationUrl }) {
   return (
     <div className="modal">
       <h2>Scan with your EU Digital Identity Wallet</h2>
 
       <div className="qr-container">
-        <QRCode value={qrCodeData} size={256} />
+        <QRCode value={verificationUrl} size={256} />
       </div>
 
       <p className="instructions">
@@ -410,13 +410,13 @@ return (
 ### 4. Retry Logic
 
 ```typescript
-const handleRetry = async () => {
-  // Create new session (old one may be expired)
-  const newSession = await createVerificationSession();
-  setSessionId(newSession.id);
-  setQRCode(newSession.qrCode);
-  setError(null);
-};
+  const handleRetry = async () => {
+    // Create new session (old one may be expired)
+    const newSession = await createVerificationSession();
+    setSessionId(newSession.id);
+    setQRCode(newSession.verificationUrl);
+    setError(null);
+  };
 
 if (session.status === 'failed' || session.status === 'expired') {
   <Button onClick={handleRetry}>Try Again</Button>
@@ -435,7 +435,7 @@ const client = new WalletGate({
 });
 
 // Creates a test session that auto-completes
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
 });
 

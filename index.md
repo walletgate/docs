@@ -79,7 +79,7 @@ const client = new WalletGate({
   apiKey: 'wg_test_your_key_here',
 });
 
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [
     { type: 'age_over', value: 18 },
     { type: 'residency_eu' },

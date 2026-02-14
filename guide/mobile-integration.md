@@ -57,7 +57,6 @@ class WalletGateClient {
         return VerificationSession(
             id: sessionData["id"] as! String,
             verificationUrl: sessionData["verificationUrl"] as! String,
-            qrCode: sessionData["qrCode"] as? String,
             expiresAt: sessionData["expiresAt"] as! String
         )
     }
@@ -80,7 +79,6 @@ class WalletGateClient {
 struct VerificationSession {
     let id: String
     let verificationUrl: String
-    let qrCode: String?
     let expiresAt: String
 }
 
@@ -222,7 +220,6 @@ class WalletGateClient(private val apiKey: String) {
     data class VerificationSession(
         val id: String,
         val verificationUrl: String,
-        val qrCode: String?,
         val expiresAt: String
     )
 
@@ -249,7 +246,6 @@ class WalletGateClient(private val apiKey: String) {
             VerificationSession(
                 id = data.getString("id"),
                 verificationUrl = data.getString("verificationUrl"),
-                qrCode = data.optString("qrCode", null),
                 expiresAt = data.getString("expiresAt")
             )
         }

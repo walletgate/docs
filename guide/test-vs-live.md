@@ -175,7 +175,7 @@ When switching from test to live, you **don't need to change any code**. Just sw
 
 ```typescript
 // This code works in both environments
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
 });
 ```
@@ -219,7 +219,7 @@ describe('Verification Flow', () => {
   });
 
   it('should create verification session', async () => {
-    const session = await testClient.createSession({
+    const session = await testClient.startVerification({
       checks: [{ type: 'age_over', value: 18 }],
     });
 

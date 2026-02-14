@@ -44,7 +44,7 @@ const client = new WalletGate({
   apiKey: process.env.WALLETGATE_API_KEY,
 });
 
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
   webhookUrl: 'https://your-app.com/api/webhooks/walletgate',
   metadata: {
@@ -536,7 +536,7 @@ ngrok provides a public URL like `https://abc123.ngrok.io`
 Use this URL in your test sessions:
 
 ```typescript
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
   webhookUrl: 'https://abc123.ngrok.io/api/webhooks/walletgate',
 });
@@ -551,7 +551,7 @@ const client = new WalletGate({
   apiKey: 'wg_test_your_test_key',
 });
 
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
   webhookUrl: 'https://your-app.com/webhooks',
 });

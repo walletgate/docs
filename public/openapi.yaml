@@ -9,8 +9,8 @@ info:
     ## Getting Started
 
     1. **Sign up** at [walletgate.app](https://walletgate.app) to get your API key
-    2. **Test for free** with 100 verifications/month using `wg_test_*` keys
-    3. **Go live** on a paid plan with `wg_live_*` keys for production verification
+    2. **Test for free** with unlimited test verifications using `wg_test_*` keys
+    3. **Go live** with `wg_live_*` keys (Free: 100 live verifications/month; paid tiers higher)
 
     ## Authentication
 
@@ -25,13 +25,15 @@ info:
 
     ## SDK Libraries
 
-    - **JavaScript/TypeScript**: `npm install @walletgate/sdk`
+    - **JavaScript/TypeScript**: `npm install @walletgate/eudi`
     - **Other languages**: Use this REST API directly
 
     ## Rate Limits
 
-    - **Test keys**: 100 verifications/month per merchant
-    - **Live keys**: Based on your plan (1,000 to 50,000+/month)
+    - **Test keys**: Unlimited test verifications (global rate limits still apply)
+    - **Live keys**: Plan-based monthly quotas (Free 100, Pro 1,000, Business 10,000)
+    - **Per-key (live)**: 60 requests/minute
+    - **Global**: 300 requests/minute per IP
 
     ## Support
 
@@ -65,20 +67,20 @@ tags:
       1. Create a session with required checks
       2. Redirect user to `verificationUrl`
       3. User completes verification in their EU Digital Identity Wallet
-      4. User is redirected back to your `returnUrl`
+      4. User is redirected back to your `redirectUrl`
       5. Poll the session status or receive a webhook event
   - name: Anomaly Detection
     description: |
-      AI-powered fraud detection and security monitoring.
+      Automated fraud detection and security monitoring.
 
-      **5 ML Algorithms Monitor 24/7:**
+      **5 detection signals monitored continuously:**
       - Velocity attacks (rapid-fire verification attempts)
       - Geographic anomalies (unusual location patterns)
       - Bot traffic detection (automated requests)
       - Credential sharing (multiple users, same credentials)
       - Suspicious behavioral patterns
 
-      Each verification gets an AI risk score (0.0-1.0) with automated recommendations.
+      Each verification gets a risk score (0.0-1.0) with recommended follow-up actions.
 
   - name: Admin Auth
     description: Administrative authentication endpoints used by the dashboard (session-cookie based).
@@ -127,13 +129,32 @@ paths:
         - EU residency verification
         - Identity matching for KYC
 
+        **Integration options:**
+        - **Hosted flow (recommended):** redirect the user to `hostedUrl`. Provide `successUrl` and `cancelUrl`
+          (or just `redirectUrl` as a fallback) so the hosted page can return the user to your app.
+        - **Custom UI / QR flow:** use `verificationUrl` to deep-link into the wallet (or render a QR code
+          from it). Use `redirectUrl` if you want WalletGate to redirect back to your app on completion.
+
         **Response includes:**
         - Session ID for polling status
-        - Verification URL to redirect user to their wallet
-        - Expiration time (default: 15 minutes)
+        - `hostedUrl` for the WalletGate hosted verification page
+        - `verificationUrl` (OpenID4VP request URL) for custom UI / QR flows
+        - Expiration time (default: 30 minutes)
       operationId: createSession
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          description: |
+            Optional idempotency key to safely retry session creation without creating duplicates.
+
+            If the same `Idempotency-Key` is reused with a different request body, the API returns `422 IDEMPOTENCY_PAYLOAD_MISMATCH`.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 256
       requestBody:
         required: true
         content:
@@ -147,7 +168,7 @@ paths:
                   checks:
                     - type: age_over
                       value: 18
-                  returnUrl: https://yourapp.com/verify-complete
+                  redirectUrl: https://yourapp.com/verify-complete
               combinedChecks:
                 summary: Age + EU residency
                 value:
@@ -155,7 +176,7 @@ paths:
                     - type: age_over
                       value: 21
                     - type: residency_eu
-                  returnUrl: https://yourapp.com/verify-complete
+                  redirectUrl: https://yourapp.com/verify-complete
                   metadata:
                     userId: "user_123"
                     orderId: "order_456"
@@ -171,7 +192,7 @@ paths:
                 data:
                   id: sess_1234567890abcdef
                   status: pending
-                  verificationUrl: https://wallet.example.eu/verify?session=sess_1234567890abcdef
+                  verificationUrl: openid4vp://?client_id=...&presentation_definition=...
                   checks:
                     - type: age_over
                       value: 18
@@ -181,8 +202,29 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/UsageLimitExceeded'
+        '409':
+          description: Idempotency conflict (request still processing)
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds to wait before retrying
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: A request with this Idempotency-Key is currently being processed
+                code: IDEMPOTENCY_CONFLICT
+        '422':
+          description: Idempotency payload mismatch (same key used with different body)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Idempotency-Key has already been used with a different request body
+                code: IDEMPOTENCY_PAYLOAD_MISMATCH
         '429':
           $ref: '#/components/responses/RateLimitExceeded'
 
@@ -198,7 +240,7 @@ paths:
         - `in_progress`: User started verification
         - `completed`: Verification successful
         - `failed`: Verification failed (user declined or checks failed)
-        - `expired`: Session expired (default: 15 minutes)
+        - `expired`: Session expired (default: 30 minutes)
 
         **Polling Recommended:**
         - Poll every 2-3 seconds after redirecting user
@@ -904,8 +946,8 @@ components:
         Authenticate using an API key via the `Authorization: Bearer <key>` header.
 
         **Keys:**
-        - Test: `wg_test_***` (test environment; 100 free/month)
-        - Live: `wg_live_***` (production)
+        - Test: `wg_test_***` (test environment; unlimited test verifications)
+        - Live: `wg_live_***` (production with plan-based quotas)
 
         Get your key at https://walletgate.app or log in at https://walletgate.app/login
 
@@ -916,7 +958,7 @@ components:
       description: |
         Admin session cookie set by the dashboard after login.
 
-        To use in docs: log in to the admin app locally, copy the `wg_admin_session` cookie value from your browser (DevTools → Application → Cookies), and paste it here. The cookie will be sent with requests to /admin/* endpoints.
+        To use in docs: log in to the admin app locally, copy the `wg_admin_session` cookie value from your browser (DevTools -> Application -> Cookies), and paste it here. The cookie will be sent with requests to /admin/* endpoints.
 
   schemas:
     CreateSessionRequest:
@@ -938,7 +980,7 @@ components:
                 enum: [age_over, residency_eu, identity_verified]
                 description: |
                   Type of verification check:
-                  - `age_over`: Verify user is at least X years old (requires `value`)
+                  - `age_over`: Verify user is at least X years old (defaults to 18 if `value` omitted)
                   - `residency_eu`: Verify user resides in an EU member state
                   - `identity_verified`: Verify user's identity has been confirmed
               value:
@@ -948,18 +990,46 @@ components:
                   - type: string
                     description: Additional check parameter
                 example: 18
-        returnUrl:
+        redirectUrl:
           type: string
           format: uri
-          description: URL to redirect user after verification completes
+          description: |
+            Optional redirect URL to send the user back to your app after verification completes.
+
+            If you use the hosted flow, `successUrl`/`cancelUrl` take precedence; `redirectUrl` is used as a fallback.
           example: https://yourapp.com/verify-complete
+        successUrl:
+          type: string
+          format: uri
+          description: |
+            Optional success redirect URL for the hosted flow.
+
+            If omitted, WalletGate falls back to `redirectUrl` (if provided).
+          example: https://yourapp.com/verified
+        cancelUrl:
+          type: string
+          format: uri
+          description: |
+            Optional cancel/failure redirect URL for the hosted flow.
+
+            If omitted, WalletGate falls back to `redirectUrl` (or `successUrl` if only that is provided).
+          example: https://yourapp.com/checkout
+        webhookUrl:
+          type: string
+          format: uri
+          description: Optional webhook URL (stored on the session; delivery configured in admin console)
+          example: https://yourapp.com/webhooks/walletgate
         metadata:
           type: object
           additionalProperties: true
-          description: Custom metadata to attach to session (max 10 keys)
+          description: Custom metadata to attach to session (max 20 keys, key length <= 100)
           example:
             userId: "user_123"
             orderId: "order_456"
+        enableAI:
+          type: boolean
+          description: Enable AI risk scoring (feature-flagged)
+          example: false
 
     SessionResponse:
       type: object
@@ -976,13 +1046,16 @@ components:
               example: sess_1234567890abcdef
             status:
               type: string
-              enum: [pending, in_progress, completed, failed, expired]
+              enum: [pending, in_progress, completed, failed, expired, canceled]
               description: Current session status
             verificationUrl:
               type: string
               format: uri
-              description: URL to redirect user to their EU Digital Identity Wallet
-              example: https://wallet.example.eu/verify?session=sess_1234567890abcdef
+              description: Wallet deep link (OpenID4VP request URL)
+              example: openid4vp://?client_id=...&presentation_definition=...
+            nonce:
+              type: string
+              description: Nonce used in the wallet request (returned for debugging)
             checks:
               type: array
               description: Requested verification checks
@@ -1007,6 +1080,42 @@ components:
             metadata:
               type: object
               description: Custom metadata attached to session
+            redirectUrl:
+              type: string
+              format: uri
+              description: Redirect URL provided when the session was created
+            successUrl:
+              type: string
+              format: uri
+              description: Success redirect URL provided when the session was created (hosted flow)
+            cancelUrl:
+              type: string
+              format: uri
+              description: Cancel/failure redirect URL provided when the session was created (hosted flow)
+            hostedUrl:
+              type: string
+              format: uri
+              description: URL for WalletGate's hosted verification page (returned on session creation)
+            riskScore:
+              type: number
+              minimum: 0
+              maximum: 1
+              description: AI-calculated risk score (0.0 = low risk, 1.0 = high risk)
+            aiInsights:
+              type: array
+              description: Optional AI insights / explanations (feature-flagged)
+              items:
+                type: string
+            environment:
+              type: string
+              enum: [test, live]
+              description: Environment derived from API key
+            testMode:
+              type: boolean
+              description: True for test keys
+            warning:
+              type: string
+              description: Test mode warning (present only for test keys)
             createdAt:
               type: string
               format: date-time
@@ -1021,22 +1130,17 @@ components:
 
     Error:
       type: object
+      required: [error, code]
+      additionalProperties: true
       properties:
-        success:
-          type: boolean
-          example: false
         error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Error code
-            message:
-              type: string
-              description: Human-readable error message
-            details:
-              type: object
-              description: Additional error details (optional)
+          type: string
+          description: Human-readable error message
+        code:
+          type: string
+          description: Machine-readable error code
+        details:
+          description: Additional error details (optional)
 
     AnomalyAlert:
       type: object
@@ -1392,10 +1496,8 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            success: false
-            error:
-              code: INVALID_REQUEST
-              message: "Invalid check type. Must be one of: age_over, residency_eu, identity_verified"
+            error: Invalid request data
+            code: VALIDATION_ERROR
 
     Unauthorized:
       description: Invalid or missing API key
@@ -1404,10 +1506,8 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            success: false
-            error:
-              code: UNAUTHORIZED
-              message: "Invalid API key. Get your key at https://walletgate.app"
+            error: Invalid API key
+            code: UNAUTHORIZED
 
     UsageLimitExceeded:
       description: Monthly or daily usage limit exceeded
@@ -1416,14 +1516,12 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            success: false
-            error:
-              code: USAGE_LIMIT_EXCEEDED
-              message: "Monthly verification limit exceeded. Upgrade your plan at https://walletgate.app/billing"
-              details:
-                currentUsage: 1000
-                monthlyLimit: 1000
-                upgradeUrl: "https://walletgate.app/billing"
+            error: Monthly verification quota reached for your plan. Please upgrade to continue.
+            code: RATE_LIMIT_EXCEEDED
+            plan: Pro
+            monthlyLimit: 1000
+            retryAfterSeconds: 12345
+            upgradeUrl: https://walletgate.app/#pricing
 
     RateLimitExceeded:
       description: Too many requests
@@ -1437,12 +1535,9 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            success: false
-            error:
-              code: RATE_LIMIT_EXCEEDED
-              message: "Too many requests. Please retry after 60 seconds."
-              details:
-                retryAfter: 60
+            error: Too many requests. Please retry after 60 seconds.
+            code: RATE_LIMIT_EXCEEDED
+            retryAfterSeconds: 60
 
     NotFound:
       description: Resource not found
@@ -1451,10 +1546,8 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            success: false
-            error:
-              code: NOT_FOUND
-      message: "Session not found"
+            error: Session not found
+            code: NOT_FOUND
 
     FeatureForbidden:
       description: Feature not available for current plan
@@ -1463,13 +1556,11 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            success: false
-            error:
-              code: FEATURE_NOT_AVAILABLE
-              message: "AI-powered anomaly detection is available on the Business plan. Please upgrade your plan."
-              details:
-                requiredPlan: business
-                currentPlan: trial
+            error: Anomaly detection is available on the Business plan. Please upgrade your plan.
+            code: FEATURE_NOT_AVAILABLE
+            details:
+              requiredPlan: business
+              currentPlan: trial
 
     UpgradeRequired:
       description: Upgrade required to access this endpoint
@@ -1478,11 +1569,9 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            success: false
-            error:
-              code: UPGRADE_REQUIRED
-              message: "Webhooks require the Business plan. Upgrade to access webhook functionality."
-              details:
-                requiredPlan: business
-                currentPlan: trial
-                upgradeUrl: "/admin/billing"
+            error: Webhooks require the Business plan. Upgrade to access webhook functionality.
+            code: UPGRADE_REQUIRED
+            details:
+              requiredPlan: business
+              currentPlan: trial
+              upgradeUrl: "/admin/billing"

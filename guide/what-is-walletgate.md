@@ -23,7 +23,7 @@ import { WalletGate } from '@walletgate/eudi';
 
 const client = new WalletGate({ apiKey: 'wg_test_...' });
 
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
 });
 ```
@@ -74,7 +74,7 @@ Perfect for:
 - 🎬 Streaming services
 
 ```typescript
-await client.createSession({
+await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
 });
 ```
@@ -88,7 +88,7 @@ Ideal for:
 - 📱 Telecom providers
 
 ```typescript
-await client.createSession({
+await client.startVerification({
   checks: [{ type: 'residency_eu' }],
 });
 ```
@@ -102,7 +102,7 @@ Essential for:
 - 🎓 Education platforms
 
 ```typescript
-await client.createSession({
+await client.startVerification({
   checks: [{ type: 'identity_verified' }],
 });
 ```

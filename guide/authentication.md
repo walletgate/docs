@@ -174,7 +174,7 @@ const client = new WalletGate({
 });
 
 // API key is automatically included in all requests
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
 });
 ```

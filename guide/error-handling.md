@@ -252,38 +252,36 @@ X-RateLimit-Reset: 1704067260
 ### Basic Try-Catch
 
 ```typescript
-import { WalletGate } from '@walletgate/eudi';
+import { WalletGate, WalletGateApiError } from '@walletgate/eudi';
 
 const client = new WalletGate({
   apiKey: process.env.WALLETGATE_API_KEY,
 });
 
 try {
-  const session = await client.createSession({
+  const session = await client.startVerification({
     checks: [{ type: 'age_over', value: 18 }],
   });
 
   console.log('Session created:', session.id);
 } catch (error) {
-  if (error.response) {
-    // API returned an error response
-    const { code, message } = error.response.data.error;
-
-    switch (code) {
-      case 'QUOTA_EXCEEDED':
-        console.error('Quota exceeded. Upgrade plan.');
+  if (error instanceof WalletGateApiError) {
+    switch (error.code) {
+      case 'RATE_LIMIT_EXCEEDED':
+        console.error('Rate limit exceeded. Please wait or upgrade.');
         break;
-
-      case 'INVALID_API_KEY':
+      case 'UNAUTHORIZED':
         console.error('Invalid API key. Check configuration.');
         break;
-
+      case 'VALIDATION_ERROR':
+        console.error('Invalid request. Check your payload.');
+        break;
       default:
-        console.error(`API error: ${message}`);
+        console.error(`API error: ${error.message} (${error.code || 'UNKNOWN'})`);
     }
+    console.error('Details:', error.details);
   } else {
-    // Network error or other issue
-    console.error('Network error:', error.message);
+    console.error('Network error:', (error as any)?.message || String(error));
   }
 }
 ```
@@ -299,15 +297,12 @@ async function createSessionWithRetry(
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
-      return await client.createSession({ checks });
+      return await client.startVerification({ checks });
     } catch (error) {
       lastError = error;
 
       // Don't retry on validation errors or quota errors
-      if (error.response?.data?.error?.code === 'VALIDATION_ERROR') {
-        throw error;
-      }
-      if (error.response?.data?.error?.code === 'QUOTA_EXCEEDED') {
+      if (error instanceof WalletGateApiError && (error.code === 'VALIDATION_ERROR' || error.code === 'RATE_LIMIT_EXCEEDED')) {
         throw error;
       }
 
@@ -325,15 +320,15 @@ async function createSessionWithRetry(
 ### User-Friendly Error Messages
 
 ```typescript
-function getUser FriendlyErrorMessage(error: any): string {
-  const errorCode = error.response?.data?.error?.code;
+function getUserFriendlyErrorMessage(error: unknown): string {
+  const errorCode = error instanceof WalletGateApiError ? error.code : undefined;
 
   const messages: Record<string, string> = {
-    QUOTA_EXCEEDED: 'We\'ve reached our verification limit. Please try again later or contact support.',
+    RATE_LIMIT_EXCEEDED: 'We\'ve reached our verification limit. Please try again later or upgrade.',
     USER_DECLINED: 'Verification was cancelled. Please try again when you\'re ready.',
     SESSION_EXPIRED: 'Verification link expired. Click below to generate a new one.',
     INVALID_CREDENTIALS: 'We couldn\'t verify your credentials. Please ensure your wallet is up to date.',
-    RATE_LIMIT_EXCEEDED: 'Too many attempts. Please wait a moment and try again.',
+    UNAUTHORIZED: 'Authentication failed. Check your API key.',
   };
 
   return messages[errorCode] || 'Something went wrong. Please try again or contact support.';
@@ -369,7 +364,7 @@ function VerificationButton() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error.message);
+        throw new Error(data.error || data.message || 'Request failed');
       }
 
       const { sessionId } = await response.json();
@@ -420,17 +415,19 @@ console.error('Error:', {
 ### Structured Logging
 
 ```typescript
+import { WalletGateApiError } from '@walletgate/eudi';
 import pino from 'pino';
 
 const logger = pino();
 
 try {
-  await client.createSession({ checks });
+  await client.startVerification({ checks });
 } catch (error) {
+  if (!(error instanceof WalletGateApiError)) throw error;
   logger.error({
     msg: 'Session creation failed',
-    errorCode: error.response?.data?.error?.code,
-    errorMessage: error.response?.data?.error?.message,
+    errorCode: error.code,
+    errorMessage: error.message,
     endpoint: '/v1/verify/sessions',
     method: 'POST',
     timestamp: Date.now(),
@@ -479,15 +476,15 @@ if (errorRate > 5) {
 
 | Code | HTTP | Description | Action |
 |------|------|-------------|--------|
-| `MISSING_API_KEY` | 401 | No Authorization header | Add API key |
-| `INVALID_API_KEY` | 401 | Key invalid or revoked | Check dashboard |
-| `QUOTA_EXCEEDED` | 403 | Monthly limit reached | Upgrade plan |
+| `UNAUTHORIZED` | 401 | Missing/invalid API key | Check dashboard / config |
 | `RATE_LIMIT_EXCEEDED` | 429 | Too many requests | Implement backoff |
 | `VALIDATION_ERROR` | 400 | Invalid input | Fix request body |
-| `SESSION_NOT_FOUND` | 404 | Session doesn't exist | Check session ID |
-| `SESSION_EXPIRED` | 400 | Session timed out (15min) | Create new session |
-| `USER_DECLINED` | 400 | User cancelled in wallet | Retry |
-| `INVALID_CREDENTIALS` | 400 | Certificate validation failed | Check wallet |
+| `NOT_FOUND` | 404 | Session doesn't exist | Check session ID |
+| `REDIRECT_ALLOWLIST_REQUIRED` | 400 | Redirect allowlist not configured | Configure allowlist in dashboard |
+| `REDIRECT_ORIGIN_NOT_ALLOWED` | 400 | Redirect origin not allowlisted | Add origin to allowlist |
+| `IDEMPOTENCY_KEY_INVALID` | 400 | Invalid Idempotency-Key header | Fix key (1-256 printable ASCII) |
+| `IDEMPOTENCY_CONFLICT` | 409 | Same key is still processing | Retry after 1s |
+| `IDEMPOTENCY_PAYLOAD_MISMATCH` | 422 | Same key used with different body | Use a new key |
 | `INTERNAL_ERROR` | 500 | Server error | Retry, contact support |
 
 [View interactive API reference →](/api/error-codes)
@@ -498,12 +495,12 @@ if (errorRate > 5) {
 
 ```typescript
 // Force validation error
-await client.createSession({
+await client.startVerification({
   checks: [{ type: 'invalid_type', value: 18 }], // Wrong type
 });
 
 // Force session not found
-await client.getSession('nonexistent-session-id');
+await client.getResult('00000000-0000-0000-0000-000000000000');
 ```
 
 ### Simulate Network Errors

@@ -36,7 +36,7 @@ const client = new WalletGate({
 });
 
 // Create verification session
-const session = await client.createSession({
+const session = await client.startVerification({
   checks: [{ type: 'age_over', value: 18 }],
 });
 
@@ -79,7 +79,7 @@ const input: CreateSessionInput = {
   redirectUrl: 'https://your-app.com/success',
 };
 
-const session: VerificationSession = await client.createSession(input);
+const session: VerificationSession = await client.startVerification(input);
 ```
 
 ## Environment Variables

@@ -71,8 +71,9 @@ Create a new verification session for a user to complete.
     "status": "pending",
     "environment": "test",
     "testMode": true,
-    "verificationUrl": "openid4vp://verify?request_uri=https://...",
-    "qrCode": "data:image/png;base64,...",
+    "hostedUrl": "https://api.walletgate.app/verify/550e8400-e29b-41d4-a716-446655440000",
+    "verificationUrl": "openid4vp://?client_id=...&presentation_definition=...",
+    "nonce": "c7d3f5...",
     "expiresAt": "2024-12-31T23:59:59Z",
     "createdAt": "2024-12-31T12:00:00Z"
   }
@@ -182,8 +183,8 @@ Verify that the user's identity has been confirmed.
 | `in_progress` | User is currently verifying |
 | `completed` | Verification successfully completed |
 | `failed` | Verification failed |
-| `expired` | Session expired (15 minutes timeout) |
-| `cancelled` | User cancelled verification |
+| `expired` | Session expired (default: 30 minutes) |
+| `canceled` | User cancelled verification |
 
 ## Response Codes
 
@@ -202,15 +203,14 @@ Verify that the user's identity has been confirmed.
 
 ```json
 {
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid check type",
-    "field": "checks[0].type",
-    "details": {
-      "allowed": ["age_over", "residency_eu", "identity_verified"]
+  "error": "Invalid request data",
+  "code": "VALIDATION_ERROR",
+  "details": [
+    {
+      "path": ["checks", 0, "type"],
+      "message": "Invalid enum value. Expected 'age_over' | 'residency_eu' | 'identity_verified'"
     }
-  }
+  ]
 }
 ```
 
