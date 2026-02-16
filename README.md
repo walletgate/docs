@@ -84,7 +84,7 @@ This documentation is licensed under [MIT License](LICENSE).
 ## Links
 
 - **Main Website**: [walletgate.app](https://walletgate.app)
-- **Dashboard**: [walletgate.app/admin](https://walletgate.app/admin)
+- **Dashboard**: [walletgate.app/admin](https://console.walletgate.app/admin)
 - **TypeScript SDK**: [@walletgate/eudi](https://www.npmjs.com/package/@walletgate/eudi) (npm)
 - **API**: [api.walletgate.app](https://api.walletgate.app)
 - **GitHub**: [github.com/walletgate](https://github.com/walletgate)

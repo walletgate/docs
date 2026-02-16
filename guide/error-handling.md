@@ -77,7 +77,7 @@ headers: {}
 - Typo in key
 - Key format incorrect
 
-**Fix:** Verify key in [dashboard](https://walletgate.app/admin)
+**Fix:** Verify key in [dashboard](https://console.walletgate.app/admin)
 
 ### Validation Errors
 
@@ -150,7 +150,7 @@ checks: [{ type: 'age_check', value: 18 }]
       "used": 1000,
       "limit": 1000,
       "resetAt": "2024-02-01T00:00:00Z",
-      "upgradeUrl": "https://walletgate.app/admin"
+      "upgradeUrl": "https://console.walletgate.app/admin"
     }
   }
 }

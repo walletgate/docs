@@ -47,7 +47,7 @@ wg_live_pk_9f8e7d6c5b4a.sk_1q2w3e4r5t6y7u8i9o
 
 ### Live Keys (Paid Plans)
 
-1. Upgrade to a paid plan in [Billing](https://walletgate.app/admin)
+1. Upgrade to a paid plan in [Billing](https://console.walletgate.app/admin)
 2. Navigate to **Keys** section
 3. Click **"Create Live Key"**
 4. Copy and store securely
@@ -242,7 +242,7 @@ const client = new WalletGate({
 
 ### Creating Keys
 
-1. Go to your [dashboard](https://walletgate.app/admin) and navigate to **API Keys**
+1. Go to your [dashboard](https://console.walletgate.app/admin) and navigate to **API Keys**
 2. Click **"Create New Key"**
 3. Select environment (Test or Live)
 4. Add description (e.g., "Production API", "Staging Server")
@@ -267,7 +267,7 @@ Regularly rotate keys for security:
 Deleting a key immediately invalidates it. All requests using that key will fail with `401 Unauthorized`.
 :::
 
-1. Go to [walletgate.app/admin](https://walletgate.app/admin)
+1. Go to [walletgate.app/admin](https://console.walletgate.app/admin)
 2. Click **"Delete"** next to the key
 3. Confirm deletion
 
@@ -386,7 +386,7 @@ HTTP/1.1 403 Forbidden
 
 View key usage in your dashboard:
 
-1. Go to [walletgate.app/admin](https://walletgate.app/admin)
+1. Go to [walletgate.app/admin](https://console.walletgate.app/admin)
 2. See usage stats for each key:
    - Total requests this month
    - Successful vs failed requests

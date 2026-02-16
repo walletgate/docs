@@ -18,7 +18,7 @@ Authorization: Bearer wg_test_your_api_key_here
 
 ::: tip Getting an API Key
 - New? [Create an account](https://walletgate.app) to get a test key (`wg_test_*`, free 100/month)
-- Existing user? [Log in](https://walletgate.app/login) to view your keys
+- Existing user? [Log in](https://console.walletgate.app/login) to view your keys
 - Live keys (`wg_live_*`) are available on all plans (Free tier includes 100/month)
 :::
 

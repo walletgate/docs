@@ -48,7 +48,7 @@ info:
     email: support@walletgate.app
   license:
     name: Terms of Service
-    url: https://walletgate.app/terms
+    url: https://www.walletgate.app/terms
 
 servers:
   - url: https://api.walletgate.app
@@ -949,7 +949,7 @@ components:
         - Test: `wg_test_***` (test environment; unlimited test verifications)
         - Live: `wg_live_***` (production with plan-based quotas)
 
-        Get your key at https://walletgate.app or log in at https://walletgate.app/login
+        Get your key at https://walletgate.app or log in at https://console.walletgate.app/login
 
     AdminSession:
       type: apiKey

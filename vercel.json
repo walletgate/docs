@@ -3,7 +3,101 @@
   "outputDirectory": ".vitepress/dist",
   "installCommand": "npm install",
   "framework": null,
+  "redirects": [
+    {
+      "source": "/guide",
+      "destination": "/guide/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/guide/",
+      "destination": "/guide/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/api",
+      "destination": "/api/overview",
+      "permanent": true
+    },
+    {
+      "source": "/api/",
+      "destination": "/api/overview",
+      "permanent": true
+    },
+    {
+      "source": "/sdk",
+      "destination": "/sdk/installation",
+      "permanent": true
+    },
+    {
+      "source": "/sdk/",
+      "destination": "/sdk/installation",
+      "permanent": true
+    },
+    {
+      "source": "/api/create-session.html",
+      "destination": "/api/overview",
+      "permanent": true
+    },
+    {
+      "source": "/api/get-session.html",
+      "destination": "/api/overview",
+      "permanent": true
+    },
+    {
+      "source": "/api/error-codes.html",
+      "destination": "/guide/error-handling",
+      "permanent": true
+    },
+    {
+      "source": "/api/webhooks.html",
+      "destination": "/guide/webhooks",
+      "permanent": true
+    },
+    {
+      "source": "/sdk/quick-start.html",
+      "destination": "/guide/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/sdk/configuration.html",
+      "destination": "/sdk/installation",
+      "permanent": true
+    },
+    {
+      "source": "/sdk/examples/age-verification.html",
+      "destination": "/guide/verification-flow",
+      "permanent": true
+    },
+    {
+      "source": "/guide/:slug.html",
+      "destination": "/guide/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/api/:slug.html",
+      "destination": "/api/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/sdk/:slug.html",
+      "destination": "/sdk/:slug",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/guide/:slug",
+      "destination": "/guide/:slug.html"
+    },
+    {
+      "source": "/api/:slug",
+      "destination": "/api/:slug.html"
+    },
+    {
+      "source": "/sdk/:slug",
+      "destination": "/sdk/:slug.html"
+    },
     {
       "source": "/(.*)",
       "destination": "/$1"

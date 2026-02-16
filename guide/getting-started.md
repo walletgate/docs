@@ -19,7 +19,7 @@ Test keys come with 100 free verifications per month and never expire. No credit
 
 ::: info Getting an API Key
 - New user? [Register](https://walletgate.app) to get a test key (`wg_test_*`)
-- Returning? [Log in](https://walletgate.app/login) to view/manage keys
+- Returning? [Log in](https://console.walletgate.app/login) to view/manage keys
 - Live keys (`wg_live_*`) are available on paid plans and used for production requests
 :::
 

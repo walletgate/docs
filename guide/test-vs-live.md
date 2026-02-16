@@ -282,7 +282,7 @@ Ready to go live? Follow these steps:
 4. **Deploy** - Push to production with new env vars
 5. **Monitor** - Watch dashboard for usage and errors
 
-[Learn how to upgrade →](https://walletgate.app/admin)
+[Learn how to upgrade →](https://console.walletgate.app/admin)
 
 ## FAQ
 
